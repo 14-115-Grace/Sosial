@@ -15,28 +15,22 @@ import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 
 // --- Pelindung Rute Private ---
-// Komponen ini "jagain" halaman yang cuma boleh diliat kalo udah login
 const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth(); // Cek status login
+  const { user } = useAuth(); 
   if (!user) {
-    // Kalo belom login, tendang ke /login
     return <Navigate to="/login" replace />;
   }
-  return children; // Kalo udah, tampilin halamannya
+  return children; 
 };
 
 // --- Komponen Shortcut Buat /profil/me ---
-// Ini ngurusin link "Profil" di sidebar
 const MyProfileRedirect = () => {
-  const { user } = useAuth(); // Cek user yg lagi login
+  const { user } = useAuth(); 
   
   if (!user) return <Navigate to="/login" replace />;
   
-  // Ambil 'handle' (username) dari data user,
-  // Kalo gak ada, pake 'id' (tapi harusnya ada)
   const userIdentifier = user.user_metadata?.handle || user.id;
-  
-  // Arahin ke halaman profil kita sendiri
+
   return <Navigate to={`/profil/${userIdentifier}`} replace />;
 };
 
@@ -45,16 +39,16 @@ const router = createBrowserRouter([
   {
     // Rute yang pake MainLayout (Sidebar merah)
     path: '/',
-    element: <MainLayout />, // Layout utama jadi 'wrapper'
+    element: <MainLayout />, 
     children: [
       {
-        path: '/', // Rute root (cth: localhost:5173/)
-        element: <HalamanTentang />, // Ini Halaman "Tentang" (Public)
+        path: '/', 
+        element: <HalamanTentang />,
       },
       {
         path: 'home', // Rute /home
         element: (
-          <ProtectedRoute> {/* Dijagain */}
+          <ProtectedRoute> 
             <Beranda />
           </ProtectedRoute>
         ),
@@ -62,19 +56,19 @@ const router = createBrowserRouter([
       {
         path: 'populer', // Rute /populer
         element: (
-          <ProtectedRoute> {/* Dijagain */}
+          <ProtectedRoute>
             <Populer />
           </ProtectedRoute>
         ),
       },
       {
         path: 'kategori', // Rute /kategori
-        element: <Kategori />, // Ini public, gak perlu <ProtectedRoute>
+        element: <Kategori />, 
       },
       {
         path: 'profil/me', // Rute 'shortcut' dari sidebar
         element: (
-          <ProtectedRoute> {/* Dijagain */}
+          <ProtectedRoute> 
             <MyProfileRedirect />
           </ProtectedRoute>
         ),
@@ -82,7 +76,7 @@ const router = createBrowserRouter([
       {
         path: 'profil/:username', // Rute dinamis (cth: /profil/adit_sopo)
         element: (
-          <ProtectedRoute> {/* Dijagain */}
+          <ProtectedRoute>
             <Profil />
           </ProtectedRoute>
         ),
@@ -100,7 +94,7 @@ const router = createBrowserRouter([
   },
   {
     // Rute 'Catch-all' (404)
-    path: '*', // Kalo URL gak ketemu
+    path: '*',
     element: <NotFound />,
   },
 ]);
