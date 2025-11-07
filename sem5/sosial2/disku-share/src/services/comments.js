@@ -1,13 +1,8 @@
-// Anda bisa tambahkan ini di posts.js atau buat file baru comments.js
-
 import { supabase } from "./supabase.js";
 
-// --- CREATE (Membuat Komentar Baru) ---
-// Kita perlu tahu kita mau komentar di post mana (postId)
 export async function createComment(postId, content) {
   const { data: { user } } = await supabase.auth.getUser(); // Kita butuh 'user' sekarang
 
-  // Langkah 1: Buat komentar (kode lama Anda, sedikit diubah)
   const { data, error } = await supabase
     .from("comments")
     .insert([{ 
@@ -23,14 +18,12 @@ export async function createComment(postId, content) {
     return null;
   }
 
-  // Langkah 2 (BARU): Cari tahu siapa pemilik post & buat notifikasi
   const { data: postData } = await supabase
     .from("posts")
     .select("user_id")
     .eq("id", postId)
     .single();
 
-  // Hanya kirim notif jika pemilik post bukan diri sendiri
   if (postData && postData.user_id !== user.id) {
     await supabase.from("notifications").insert([
       {
@@ -77,22 +70,15 @@ export async function getCommentsForPost(postId, page = 1, limit = 10) {
   // Proses data agar rapi (sama seperti di getPosts)
   const processedData = data.map(comment => ({
     ...comment,
-    // Ubah array [ { count: N } ] menjadi angka N
     like_count: comment.comment_likes.length > 0 ? comment.comment_likes[0].count : 0
   }));
   
   // Hapus data mentah
   processedData.forEach(comment => delete comment.comment_likes);
   
-  // Hasilnya akan seperti:
-  // { id: ..., content: ..., users: {...}, like_count: 10 }
-  
   return processedData;
 }
 
-// --- DELETE (Menghapus Komentar) ---
-// Ini sama seperti deletePost, tapi RLS akan memastikan
-// hanya pemilik yang bisa melakukannya.
 export async function deleteComment(commentId) {
   const { data, error } = await supabase
     .from("comments")
@@ -106,12 +92,6 @@ export async function deleteComment(commentId) {
   return data;
 }
 
-// (Fungsi updateComment akan mirip dengan updatePost)
-
-/**
- * Me-like sebuah komentar.
- * @param {string} commentId - ID dari komentar yang di-like.
- */
 export async function likeComment(commentId) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -148,7 +128,6 @@ export async function likeComment(commentId) {
         recipient_id: commentData.user_id, // Penerima = pemilik komentar
         actor_id: user.id,                 // Aktor = saya (yang me-like)
         notification_type: 'like_comment'
-        // post_id bisa null atau bisa kita cari (tapi lebih rumit)
       }
     ]);
   }
@@ -156,10 +135,6 @@ export async function likeComment(commentId) {
   return data;
 }
 
-/**
- * Membatalkan like pada sebuah komentar.
- * @param {string} commentId - ID dari komentar yang di-unlike.
- */
 export async function unlikeComment(commentId) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
@@ -179,14 +154,7 @@ export async function unlikeComment(commentId) {
   return data;
 }
 
-/**
- * Meng-edit (update) isi dari sebuah komentar.
- * @param {string} commentId - ID dari komentar yang akan diedit.
- * @param {string} newContent - Teks isi yang baru.
- */
 export async function updateComment(commentId, newContent) {
-  // RLS (yang sudah kita buat) akan memastikan
-  // hanya pemilik komentar yang bisa melakukan ini.
   const { data, error } = await supabase
     .from("comments")
     .update({ content: newContent })
