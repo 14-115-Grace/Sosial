@@ -1,22 +1,14 @@
-// posts.js
+
 import { supabase } from "./supabase.js";
 
-/**
- * Membuat post baru DAN melampirkan kategorinya.
- * @param {string} content - Isi dari post.
- * @param {string[]} categoryNames - Array nama tag, misal: ["EtikaAI", "KopiLokal"]
- */
 export async function createPost(content, categoryNames = []) {
   
-  // ----- Bagian 1: Buat atau temukan ID Kategori -----
-  // Kita gunakan upsert: jika tag "EtikaAI" belum ada, buat. Jika sudah, ambil ID-nya.
-  // RLS di tabel 'categories' (INSERT: authenticated) mengizinkan ini.
   
   const categoryObjects = categoryNames.map(name => ({ name: name.trim() }));
   
   const { data: categories, error: categoryError } = await supabase
     .from("categories")
-    .upsert(categoryObjects, { onConflict: 'name' }) // Membutuhkan 'name' sebagai UNIQUE
+    .upsert(categoryObjects, { onConflict: 'name' }) 
     .select("id, name");
 
   if (categoryError) {
@@ -24,14 +16,12 @@ export async function createPost(content, categoryNames = []) {
     return null;
   }
 
-  // ----- Bagian 2: Buat Postingan -----
-  // RLS di tabel 'posts' (INSERT: authenticated) mengizinkan ini.
   
   const { data: postData, error: postError } = await supabase
     .from("posts")
     .insert([{ content: content }])
     .select("id")
-    .single(); // .single() agar hasilnya objek, bukan array
+    .single(); 
 
   if (postError) {
     console.error("Gagal membuat post:", postError);
@@ -39,9 +29,6 @@ export async function createPost(content, categoryNames = []) {
   }
 
   const newPostId = postData.id;
-
-  // ----- Bagian 3: Tautkan Postingan dengan Kategori -----
-  // RLS di 'post_categories' (INSERT: cek pemilik post) mengizinkan ini.
   
   if (categories && categories.length > 0) {
     const links = categories.map(cat => ({
@@ -55,12 +42,11 @@ export async function createPost(content, categoryNames = []) {
 
     if (linkError) {
       console.error("Gagal menautkan kategori ke post:", linkError);
-      // Peringatan: Post tetap dibuat, tapi tanpa tag.
     }
   }
 
   console.log("Post dan tag berhasil dibuat!");
-  return postData; // Mengembalikan post yang baru dibuat
+  return postData; 
 }
 
 export async function getPosts(page = 1, limit = 10) {
@@ -91,7 +77,6 @@ export async function getPosts(page = 1, limit = 10) {
     return [];
   }
 
-  // ... (Sisa kode pemrosesan data Anda tetap sama) ...
   const processedData = data.map(post => ({
     ...post,
     like_count: post.likes.length > 0 ? post.likes[0].count : 0,
@@ -104,9 +89,6 @@ export async function getPosts(page = 1, limit = 10) {
   return processedData;
 }
 
-// ... (fungsi updatePost dan deletePost Anda tetap sama) ...
-
-// Ganti searchPosts LAMA Anda dengan yang INI:
 export async function searchPosts(queryText, page = 1, limit = 10) {
   if (!queryText || queryText.trim() === "") {
     return [];
@@ -141,7 +123,6 @@ export async function searchPosts(queryText, page = 1, limit = 10) {
     return [];
   }
 
-  // ... (Sisa kode pemrosesan data Anda tetap sama) ...
   const processedData = data.map(post => ({
     ...post,
     like_count: post.likes.length > 0 ? post.likes[0].count : 0,
@@ -154,7 +135,6 @@ export async function searchPosts(queryText, page = 1, limit = 10) {
   return processedData;
 }
 
-// Ganti getLikedPosts LAMA Anda dengan yang INI:
 export async function getLikedPosts(userId, page = 1, limit = 10) {
   // 1. Hitung rentang (range)
   const from = (page - 1) * limit;
@@ -188,7 +168,6 @@ export async function getLikedPosts(userId, page = 1, limit = 10) {
     return [];
   }
 
-  // ... (Sisa kode pemrosesan data Anda tetap sama) ...
   const posts = data.map((item) => item.posts);
   const processedData = posts.map((post) => ({
     ...post,
@@ -202,8 +181,6 @@ export async function getLikedPosts(userId, page = 1, limit = 10) {
   return processedData;
 }
 
-// --- UPDATE (Mengedit Post) ---
-// RLS akan otomatis memblokir ini jika user_id tidak cocok.
 export async function updatePost(postId, newContent) {
   const { data, error } = await supabase
     .from("posts")
@@ -217,8 +194,6 @@ export async function updatePost(postId, newContent) {
   return data;
 }
 
-// --- DELETE (Menghapus Post) ---
-// RLS akan otomatis memblokir ini jika user_id tidak cocok.
 export async function deletePost(postId) {
   const { data, error } = await supabase
     .from("posts")
@@ -233,12 +208,6 @@ export async function deletePost(postId) {
 
 }
 
-/**
- * Mengambil SEMUA post yang dibuat oleh SATU user.
- * @param {string} userId - ID dari user yang post-nya mau diliat.
- * @param {number} page - Halaman ke-berapa (untuk pagination).
- * @param {number} limit - Berapa post per halaman.
- */
 export async function getPostsByUserId(userId, page = 1, limit = 10) {
   // 1. Hitung rentang (range)
   const from = (page - 1) * limit;
