@@ -1,9 +1,5 @@
-// Anda bisa tambahkan ini di posts.js atau file baru likes.js
 import { supabase } from "./supabase.js";
 
-// --- CREATE (Me-like sebuah Post) ---
-// user_id akan diisi oleh RLS (WITH CHECK) dan Primary Key.
-// Kita hanya perlu tahu post_id mana yang di-like.
 export async function likePost(postId) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -11,7 +7,6 @@ export async function likePost(postId) {
     return;
   }
 
-  // Langkah 1: Lakukan aksi like (kode lama Anda)
   const { data, error } = await supabase
     .from("likes")
     .insert([{ 
@@ -21,27 +16,24 @@ export async function likePost(postId) {
 
   if (error) {
     console.warn("Gagal me-like (mungkin sudah di-like):", error.message);
-    return; // Hentikan jika gagal (atau sudah di-like)
+    return;
   }
   
   console.log("Berhasil me-like post!");
 
-  // Langkah 2 (BARU): Cari tahu siapa pemilik post & buat notifikasi
-  // Kita perlu query dulu untuk cari tahu siapa 'recipient_id'-nya
   const { data: postData } = await supabase
     .from("posts")
     .select("user_id")
     .eq("id", postId)
     .single();
 
-  // Hanya kirim notif jika pemilik post bukan diri sendiri
   if (postData && postData.user_id !== user.id) {
     await supabase.from("notifications").insert([
       {
-        recipient_id: postData.user_id, // Penerima = pemilik post
-        actor_id: user.id,              // Aktor = saya (yang me-like)
+        recipient_id: postData.user_id, 
+        actor_id: user.id,              
         notification_type: 'like_post',
-        post_id: postId                 // Post yang terkait
+        post_id: postId                 
       }
     ]);
   }
@@ -57,8 +49,8 @@ export async function unlikePost(postId) {
   const { data, error } = await supabase
     .from("likes")
     .delete()
-    .eq("post_id", postId)    // RLS akan otomatis menambahkan
-    .eq("user_id", user.id);  // "... DAN user_id = auth.uid()"
+    .eq("post_id", postId)    
+    .eq("user_id", user.id);  
 
   if (error) {
     console.error("Gagal batal-like:", error.message);
@@ -69,10 +61,6 @@ export async function unlikePost(postId) {
   return data;
 }
 
-/**
- * Mengambil DAFTAR pengguna yang me-like sebuah post.
- * @param {string} postId - ID dari post yang ingin dilihat.
- */
 export async function getUsersWhoLikedPost(postId, page = 1, limit = 20) {
   // 1. Hitung rentang (range)
   const from = (page - 1) * limit;
@@ -83,11 +71,11 @@ export async function getUsersWhoLikedPost(postId, page = 1, limit = 20) {
     .select("users(id, name, handle, avatar_url)")
     .eq("post_id", postId)
     .not(
-      'user_id', // Filter likers yang...
+      'user_id', 
       'in', 
       '(select blocked_id from blocks where blocker_id = auth.uid() union select blocker_id from blocks where blocked_id = auth.uid())'
     )
-    .range(from, to); // 2. Tambahkan .range()
+    .range(from, to);
 
   if (error) {
     console.error("Gagal mengambil daftar likers:", error);
