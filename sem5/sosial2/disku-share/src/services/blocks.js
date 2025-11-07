@@ -1,10 +1,5 @@
-// blocks.js
 import { supabase } from "./supabase.js";
 
-/**
- * Memblokir seorang pengguna.
- * @param {string} userIdToBlock - ID pengguna yang akan diblokir.
- */
 export async function blockUser(userIdToBlock) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -35,10 +30,6 @@ export async function blockUser(userIdToBlock) {
   return data;
 }
 
-/**
- * Membatalkan blokir seorang pengguna.
- * @param {string} userIdToUnblock - ID pengguna yang akan dibatal-blokir.
- */
 export async function unblockUser(userIdToUnblock) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
