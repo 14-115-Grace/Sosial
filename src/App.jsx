@@ -1,56 +1,38 @@
-// src/App.jsx
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from './context/AuthContext.jsx';
 
-// --- Impor Halaman & Komponen ---
-import MainLayout from './components/layout/MainLayout';
-import HalamanTentang from './pages/HalamanTentang';
-import Beranda from './pages/Beranda';
-import Populer from './pages/Populer';
-import Kategori from './pages/Kategori';
-import Profil from './pages/Profil';
-import PostDetail from './pages/PostDetail';
-import EditProfil from './pages/EditProfil'; // Halaman baru
-import Login from './pages/Login';
-import Register from './pages/Register';
-import NotFound from './pages/NotFound';
-import Loading from './components/common/Loading'; // Spinner
+// --- Impor Layout & Halaman ---
+import MainLayout from './components/layout/MainLayout.jsx';
+import HalamanTentang from './pages/HalamanTentang.jsx';
+import Beranda from './pages/Beranda.jsx';
+import Populer from './pages/Populer.jsx';
+import Kategori from './pages/Kategori.jsx';
+import Profil from './pages/Profil.jsx';
+import PostDetail from './pages/PostDetail.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
+import NotFound from './pages/NotFound.jsx';
+import Pengaturan from './pages/Pengaturan.jsx';
 
-// --- Pelindung Rute Private (UDAH DI-UPGRADE) ---
+// --- Pelindung Rute Private ---
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth(); // Ambil 'loading' dari context
-  const location = useLocation(); // Ambil lokasi sekarang
-
-  if (loading) {
-    // Kalo app lagi loading session, TAMPILIN SPINNER
-    return <Loading />; 
-  }
-
+  const { user } = useAuth(); // Cek status login
   if (!user) {
-    // Kalo udah gak loading DAN user gak ada, tendang ke login
-    // Kirim 'state' biar Login.jsx tau kita abis dari mana
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-  
-  return children; // Aman, user ada
-};
-
-// --- Komponen Shortcut Buat /profil/me (UDAH DI-UPGRADE) ---
-const MyProfileRedirect = () => {
-  // Ambil 'profile' & 'loading' dari context
-  const { user, profile, loading } = useAuth(); 
-  
-  if (loading) {
-    return <Loading />; // TAMPILIN SPINNER
-  }
-
-  if (!user || !profile) {
+    // Kalo belom login, tendang ke /login
     return <Navigate to="/login" replace />;
   }
+  return children; // Kalo udah, tampilin halamannya
+};
+
+// --- Komponen Shortcut Buat /profil/me ---
+const MyProfileRedirect = () => {
+  const { profile } = useAuth(); 
   
-  // PAKE 'handle' DARI PROFIL, BUKAN METADATA
-  const userIdentifier = profile.handle || user.id;
+  if (!profile) return <Navigate to="/login" replace />;
+  
+  // Ambil 'handle' dari OBJEK PROFIL, bukan user_metadata
+  const userIdentifier = profile.handle; // <-- INI PERBAIKANNYA
   
   return <Navigate to={`/profil/${userIdentifier}`} replace />;
 };
@@ -69,13 +51,17 @@ const router = createBrowserRouter([
       {
         path: 'home', // Rute /home
         element: (
-          <ProtectedRoute> <Beranda /> </ProtectedRoute>
+          <ProtectedRoute> {/* Dijagain */}
+            <Beranda />
+          </ProtectedRoute>
         ),
       },
       {
         path: 'populer', // Rute /populer
         element: (
-          <ProtectedRoute> <Populer /> </ProtectedRoute>
+          <ProtectedRoute> {/* Dijagain */}
+            <Populer />
+          </ProtectedRoute>
         ),
       },
       {
@@ -85,22 +71,30 @@ const router = createBrowserRouter([
       {
         path: 'profil/me', // Rute 'shortcut' dari sidebar
         element: (
-          <ProtectedRoute> <MyProfileRedirect /> </ProtectedRoute>
+          <ProtectedRoute> {/* Dijagain */}
+            <MyProfileRedirect />
+          </ProtectedRoute>
         ),
       },
       {
-        path: 'profil/:username', // Rute dinamis (cth: /profil/adit_sopo)
+        path: 'profil/:username', // Rute dinamis
         element: (
-          <ProtectedRoute> <Profil /> </ProtectedRoute>
+          <ProtectedRoute> {/* Dijagain */}
+            <Profil />
+          </ProtectedRoute>
         ),
       },
       {
-        path: 'post/:postId', // Rute buat detail post
+        path: 'post/:postId',
         element: <ProtectedRoute><PostDetail /></ProtectedRoute>,
       },
-      { 
-        path: 'pengaturan/akun', // Rute buat edit profil
-        element: <ProtectedRoute><EditProfil /></ProtectedRoute>,
+      {
+        path: 'pengaturan/akun',
+        element: (
+          <ProtectedRoute>
+            <Pengaturan />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
@@ -114,7 +108,6 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    // Rute 'Catch-all' (404)
     path: '*', // Kalo URL gak ketemu
     element: <NotFound />,
   },
