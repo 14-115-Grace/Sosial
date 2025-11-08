@@ -10,7 +10,7 @@ import {
 } from '../services/auth';
 import Loading from '../components/common/Loading';
 
-// --- Styled Components (SESUAI Edit profil.png) ---
+// Styled Components (SESUAI Edit profil.png)
 
 const PageHeader = styled.h1`
   font-size: 2.5rem;
@@ -19,7 +19,7 @@ const PageHeader = styled.h1`
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
-// Ganti <form> jadi wrapper biasa
+// Mengganti <form> jadi wrapper biasa
 const SettingsWrapper = styled.div`
   background: ${({ theme }) => theme.colors.card}; /* Putih */
   border: 1px solid #eee;
@@ -51,7 +51,7 @@ const SectionBody = styled.div`
   gap: 1.5rem;
 `;
 
-// --- Komponen Form ---
+// Komponen Form
 const FormRow = styled.div`
   display: flex;
   flex-direction: column;
@@ -92,7 +92,7 @@ const Textarea = styled.textarea`
   }
 `;
 
-// --- Komponen Upload Foto ---
+// Komponen Upload Foto
 const FileInputLabel = styled(Label)`
   cursor: pointer;
   color: ${({ theme }) => theme.colors.primary};
@@ -151,7 +151,7 @@ const Button = styled.button`
   &:hover { opacity: 0.9; }
 `;
 
-// --- Komponen Utama ---
+// Komponen Utama
 const EditProfil = () => {
   const { profile, loading: authLoading } = useAuth();
 
@@ -229,7 +229,7 @@ const EditProfil = () => {
       
       <SettingsWrapper>
         <Form onSubmit={handleSubmit}>
-          {/* === SEKSI FOTO === */}
+          {/* SEKSI FOTO */}
           <SectionHeader>
             <h2>Foto Profil & Banner</h2>
             <p>Perbarui foto profil dan banner untuk mempersonalisasi akunmu.</p>
@@ -263,7 +263,7 @@ const EditProfil = () => {
             </FormRow>
           </SectionBody>
 
-          {/* === SEKSI INFO DASAR === */}
+          {/* SEKSI INFO DASAR */}
           <SectionHeader>
             <h2>Info Dasar Akun</h2>
             <p>Kelola nama, handle, dan kata sandi Anda.</p>
@@ -308,7 +308,7 @@ const EditProfil = () => {
             </FormRow>
           </SectionBody>
 
-          {/* --- TOMBOL SIMPAN --- */}
+          {/* TOMBOL SIMPAN */}
           <SectionFooter>
             <Button type="submit" disabled={loading}>
               {loading ? 'Menyimpan...' : 'Simpan Perubahan Akun'}
