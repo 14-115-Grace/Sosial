@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../services/supabase.js'; // Inisialisasi koneksi Supabase
 import { getUserProfile } from '../services/auth.js'; // Fungsi untuk ambil data profil user dari DB
