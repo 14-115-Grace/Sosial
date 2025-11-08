@@ -1,5 +1,5 @@
 // src/components/layout/RightSidebarKategori.jsx
-import React, { useState } from 'react'; // <-- 1. Import useState
+import React, { useState } from 'react'; // <-- Import useState
 import styled from 'styled-components';
 import CategoryList from '../common/CategoryList';
 
@@ -20,12 +20,12 @@ const SearchBar = styled.input`
   background: #fff;
 `;
 
-// 2. Terima prop baru bernama 'onSearchSubmit'
+// Terima prop baru bernama 'onSearchSubmit'
 const RightSidebarKategori = ({ onSearchSubmit }) => {
-  // 3. Buat state LOKAL untuk menyimpan teks input
+  // Buat state LOKAL untuk menyimpan teks input
   const [searchText, setSearchText] = useState('');
 
-  // 4. Buat fungsi untuk menangani penekanan tombol
+  // Buat fungsi untuk menangani penekanan tombol
   const handleKeyDown = (e) => {
     // Jika tombol yang ditekan adalah 'Enter'
     if (e.key === 'Enter') {
@@ -39,9 +39,9 @@ const RightSidebarKategori = ({ onSearchSubmit }) => {
     <Gutter>
       <SearchBar 
         placeholder="Cari Postingan..." 
-        value={searchText} // 5. Hubungkan 'value' ke state
-        onChange={(e) => setSearchText(e.target.value)} // 6. Update state saat diketik
-        onKeyDown={handleKeyDown} // 7. Panggil fungsi saat tombol ditekan
+        value={searchText} // Hubungkan 'value' ke state
+        onChange={(e) => setSearchText(e.target.value)} // Update state saat diketik
+        onKeyDown={handleKeyDown} // Panggil fungsi saat tombol ditekan
       />
       <CategoryList />
     </Gutter>
