@@ -2,19 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { getPostById } from '../services/posts'; 
-import { getCommentsForPost } from '../services/comments';
-import PostCard from '../components/post/PostCard'; 
-import Loading from '../components/common/Loading';
-import CreateCommentBox from '../components/post/CreateCommentBox';
-import CommentCard from '../components/comment/CommentCard'; // <-- Import sudah benar
+import { useAuth } from '../context/AuthContext.jsx';
+import { getPostById } from '../services/posts.js'; 
+import { getCommentsForPost } from '../services/comments.js';
+import PostCard from '../components/post/PostCard.jsx'; 
+import Loading from '../components/common/Loading.jsx';
+import CreateCommentBox from '../components/post/CreateCommentBox.jsx';
+import CommentCard from '../components/comment/CommentCard.jsx'; //ini dipakai buat nampilin komentar
 
+// Wrapper utama halaman detail post
 const PageWrapper = styled.div`
   max-width: 700px;
   margin: 0 auto;
 `;
 
+// Tombol balik ke halaman sebelumnya
 const BackLink = styled(Link)`
   display: inline-block;
   margin-bottom: 1rem;
@@ -23,6 +25,7 @@ const BackLink = styled(Link)`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
+// Header komentar
 const CommentsHeader = styled.h3`
   font-size: 1.2rem;
   margin-top: 2rem;
@@ -31,30 +34,37 @@ const CommentsHeader = styled.h3`
 `;
 
 const PostDetail = () => {
-  const { postId } = useParams(); 
+  const { postId } = useParams(); // Ambil ID post dari URL
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { profile } = useAuth(); 
+  const { profile } = useAuth(); // Data user yang login
 
   useEffect(() => {
+    // Fetch data post + komentar sekaligus
     const fetchData = async () => {
       setLoading(true);
-      const postData = await getPostById(postId);
+
+      const postData = await getPostById(postId); // Ambil post berdasarkan ID
       
       if (postData) {
         setPost(postData);
+
+        // Ambil semua komentar untuk post ini
         const commentData = await getCommentsForPost(postId);
         setComments(commentData);
       }
+
       setLoading(false);
     };
 
     fetchData();
-  }, [postId]);
+  }, [postId]); // Re-fetch kalau ID post berubah
 
+  // Fungsi buat nambah komentar baru ke state tanpa reload
   const handleCommentCreated = (newCommentData, originalContent) => {
-    
+
+    // Format komentar baru biar match sama struktur data dari DB
     const newComment = {
       id: newCommentData.id,
       created_at: newCommentData.created_at,
@@ -68,18 +78,22 @@ const PostDetail = () => {
       }
     };
 
+    // Tambahin ke list komentar yang udah ada
     setComments(currentComments => [...currentComments, newComment]);
     
+    // Update jumlah komentar di post
     setPost(currentPost => ({
       ...currentPost,
       comment_count: (currentPost.comment_count || 0) + 1
     }));
   };
 
+  // Kalau masih loading, tampilin spinner
   if (loading) {
     return <Loading />;
   }
 
+  // Kalau post nggak ketemu
   if (!post) {
     return (
       <PageWrapper>
@@ -91,17 +105,21 @@ const PostDetail = () => {
 
   return (
     <PageWrapper>
-      {/* --- ⬇️ INI ADALAH PERBAIKANNYA ⬇️ --- */}
+      {/* Tombol balik */}
       <BackLink to="/home">← Kembali</BackLink>
       
+      {/* Komponen utama post */}
       <PostCard post={post} /> 
 
+      {/* Box buat nulis komentar */}
       <CreateCommentBox 
         postId={post.id} 
         onCommentCreated={handleCommentCreated} 
       />
 
+      {/* Header komentar + list komentar */}
       <CommentsHeader>Komentar ({comments.length})</CommentsHeader>
+
       {comments.length > 0 ? (
         comments.map(comment => (
           <CommentCard 
