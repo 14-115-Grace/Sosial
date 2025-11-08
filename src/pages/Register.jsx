@@ -2,33 +2,34 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, Link } from 'react-router-dom';
-import { registerUser } from '../services/auth.js'; //
+import { registerUser } from '../services/auth.js'; // Import fungsi register dari services
 
-// --- Styled Components (NYAMAIN Login.png) ---
+// --- Styled Components (nyamain tampilan Figma Login/Register) ---
 
 const PageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  /* Warna background off-white dari Figma */
+  /* Warna background off-white biar lembut dan gak nyilauin */
   background-color: ${({ theme }) => theme.colors.background || '#FDF8EE'};
 `;
 
 const FormCard = styled.form`
-  /* Warna kartu peach/pink muda dari Login.png */
+  /* Card utama tempat form register */
   background: #FCEFEA; 
   padding: 2.5rem;
   border-radius: 8px;
   width: 100%;
   max-width: 400px;
+  /* Kasih shadow biar keliatan ngambang dikit */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 `;
 
 const Title = styled.h2`
   text-align: center;
   margin-bottom: 2rem;
-  /* Font hitam biasa, bukan maroon */
+  /* Warna teks netral, gak perlu bold banget */
   color: ${({ theme }) => theme.colors.textPrimary || '#333'};
 `;
 
@@ -45,7 +46,7 @@ const Input = styled.input`
   margin-bottom: 1.25rem;
   border: 1px solid #E0E0E0;
   border-radius: 4px;
-  background: #FFFFFF; /* Input field-nya putih */
+  background: #FFFFFF; /* Input tetap putih biar kontras */
   font-size: 1rem;
 
   &:focus {
@@ -67,7 +68,7 @@ const Button = styled.button`
   cursor: pointer;
 
   &:hover {
-    opacity: 0.9;
+    opacity: 0.9; /* efek hover dikit biar responsif */
   }
 `;
 
@@ -83,22 +84,28 @@ const StyledLink = styled(Link)`
   text-decoration: none;
 `;
 
-// --- Komponen ---
+// --- Komponen Utama Register ---
 const Register = () => {
+  // State buat nyimpen input user
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [handle, setHandle] = useState('');
   const navigate = useNavigate();
 
+  // Fungsi saat form di-submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validasi simpel: semua field wajib diisi
     if (!email || !password || !fullName || !handle) {
       alert('Semua field harus diisi, G!');
       return;
     }
     
-    await registerUser(fullName, email, password, handle); //
+    // Kirim data ke backend lewat services/auth.js
+    await registerUser(fullName, email, password, handle); 
+    // Kalau berhasil, langsung pindah ke halaman login
     navigate('/login');
   };
 
@@ -107,6 +114,7 @@ const Register = () => {
       <FormCard onSubmit={handleSubmit}>
         <Title>Buat Akun Barumu</Title>
         
+        {/* Input nama lengkap */}
         <Label>Nama Lengkap</Label>
         <Input 
           type="text" 
@@ -115,6 +123,7 @@ const Register = () => {
           onChange={(e) => setFullName(e.target.value)}
         />
         
+        {/* Input handle atau username */}
         <Label>Handle (@username)</Label>
         <Input 
           type="text" 
@@ -123,6 +132,7 @@ const Register = () => {
           onChange={(e) => setHandle(e.target.value)}
         />
         
+        {/* Input email */}
         <Label>Email</Label>
         <Input 
           type="email" 
@@ -131,6 +141,7 @@ const Register = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         
+        {/* Input password */}
         <Label>Kata Sandi</Label>
         <Input 
           type="password" 
@@ -139,8 +150,10 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         
+        {/* Tombol daftar */}
         <Button type="submit">Daftar</Button>
 
+        {/* Link ke halaman login */}
         <FooterText>
           Udah punya akun? <StyledLink to="/login">Masuk di sini</StyledLink>
         </FooterText>
