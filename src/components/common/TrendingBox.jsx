@@ -18,13 +18,11 @@ const Title = styled.h3`
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
 
-// --- ⬇️ INI ADALAH PERBAIKANNYA ⬇️ ---
 const TrendGrid = styled.div`
   display: flex;
-  flex-direction: column; /* Bikin 1 kolom (turun ke bawah) */
-  gap: 1rem; /* Jarak antar item */
+  flex-direction: column;
+  gap: 1rem; 
 `;
-// --- ⬆️ SELESAI ⬆️ ---
 
 const TrendItem = styled(Link)`
   display: block;
