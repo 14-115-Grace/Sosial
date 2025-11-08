@@ -1,13 +1,11 @@
-// src/pages/Kategori.jsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getPosts, searchPosts } from '../services/posts'; // <-- 1. IMPORT 'searchPosts'
-import PostCard from '../components/post/PostCard';
-import Loading from '../components/common/Loading';
-import RightSidebarKategori from '../components/layout/RightSidebarKategori';
-import CreatePostBox from '../components/post/CreatePostBox';
+import { getPosts, searchPosts } from '../services/posts.js'; 
+import PostCard from '../components/post/PostCard.jsx';
+import Loading from '../components/common/Loading.jsx';
+import RightSidebarKategori from '../components/layout/RightSidebarKategori.jsx';
+import CreatePostBox from '../components/post/CreatePostBox.jsx';
 
-// --- Styled Components (Biarkan apa adanya) ---
 const PageWrapper = styled.div`
   display: flex;
 `;
@@ -26,38 +24,39 @@ const SubHeader = styled.h2`
   border-top: 1px solid #eee;
   padding-top: 1.5rem;
 `;
-// ---
 
 const Kategori = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  // 2. Buat state untuk menyimpan 'query' pencarian yang aktif
   const [activeQuery, setActiveQuery] = useState('');
 
-  // 3. Ubah useEffect agar 'mendengarkan' perubahan 'activeQuery'
+  const fetchPosts = async () => {
+    setLoading(true);
+    let data;
+    
+    if (activeQuery) {
+      data = await searchPosts(activeQuery);
+    } else {
+      data = await getPosts(1, 20);
+    }
+    
+    setPosts(data);
+    setLoading(false);
+  };
+  
   useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      let data;
-      
-      if (activeQuery) {
-        // Jika ADA query, panggil searchPosts
-        data = await searchPosts(activeQuery);
-      } else {
-        // Jika TIDAK ADA query, panggil getPosts (default)
-        data = await getPosts(1, 20);
-      }
-      
-      setPosts(data);
-      setLoading(false);
-    };
-
+    // Panggil fetchPosts saat komponen dimuat
     fetchPosts();
-  }, [activeQuery]); // <-- 4. Jalankan ulang effect ini saat 'activeQuery' berubah
+  }, [activeQuery]); 
 
   const handlePostCreated = () => {
-    // Saat post baru dibuat, reset pencarian agar post baru muncul
-    setActiveQuery(''); 
+    if (activeQuery) {
+      // Jika kita sedang mencari, reset pencarian
+      setActiveQuery(''); 
+    } else {
+      // panggil fetchPosts() secara manual untuk refresh list
+      fetchPosts();
+    }
   };
   
   const handlePostDeleted = (deletedPostId) => {
@@ -66,14 +65,12 @@ const Kategori = () => {
     );
   };
 
-  // 5. Buat fungsi handler yang akan dikirim ke Sidebar
   const handleSearchSubmit = (query) => {
     setActiveQuery(query);
   };
 
   return (
     <PageWrapper>
-      {/* === KOLOM TENGAH (FEED) === */}
       <MainFeed>
         <PageHeader>Jelajahi Kategori</PageHeader>
         <p style={{marginTop: "-1.5rem", marginBottom: "2rem", fontSize: "1.1rem"}}>
@@ -82,14 +79,13 @@ const Kategori = () => {
 
         <CreatePostBox onPostCreated={handlePostCreated} />
         
-        {/* 6. Ganti judul SubHeader secara dinamis */}
         <SubHeader>
           {activeQuery ? `Hasil untuk "${activeQuery}"` : 'Postingan Terkini'}
         </SubHeader>
         
         {loading ? (
           <Loading />
-        ) : posts.length > 0 ? ( // 7. Cek jika 'posts' ada isinya
+        ) : posts.length > 0 ? (
           posts.map(post => (
             <PostCard 
               key={post.id} 
@@ -98,13 +94,10 @@ const Kategori = () => {
             />
           ))
         ) : (
-          // 8. Tampilkan pesan jika tidak ada hasil
           <p>Tidak ada postingan yang ditemukan.</p> 
         )}
       </MainFeed>
       
-      {/* === KOLOM KANAN (GUTTER) === */}
-      {/* 9. Kirim fungsi handler sebagai prop ke Sidebar */}
       <RightSidebarKategori onSearchSubmit={handleSearchSubmit} />
     </PageWrapper>
   );
