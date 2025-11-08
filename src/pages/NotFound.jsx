@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-// --- Styled Components (Sesuai Error Page.png) ---
+// --- Styled Components  ---
 
 const PageWrapper = styled.div`
   display: flex;
@@ -64,7 +64,6 @@ const NotFound = () => {
         Coba periksa kembali alamat URL atau pastikan koneksi internetmu stabil
         sebelum kembali ke halaman utama.
       </ErrorMessage>
-      {/* Kita arahin ke / (Tentang) atau /home (Timeline) */}
       <HomeButton to="/">Kembali ke Halaman Utama</HomeButton>
     </PageWrapper>
   );
