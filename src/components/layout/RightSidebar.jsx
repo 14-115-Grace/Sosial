@@ -11,9 +11,6 @@ const Gutter = styled.aside`
   align-self: flex-start;
 `;
 
-// Nanti kita tambahin SearchBar di sini
-// const SearchBar = styled.input` ... `;
-
 const RightSidebar = () => {
   return (
     <Gutter>
