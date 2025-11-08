@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx'; 
-import { likePost, unlikePost } from '../../services/likes.js'; 
-import { deletePost } from '../../services/posts.js';
+import { useAuth } from '../../context/AuthContext.jsx'; // Hook untuk ambil data user login
+import { likePost, unlikePost } from '../../services/likes.js'; // Fungsi untuk like/unlike post
+import { deletePost } from '../../services/posts.js'; // Fungsi untuk hapus post
 
-// --- Helper Functions ---
+// Format timestamp agar tampil dengan tanggal & bulan singkat (misal: 8 Nov)
 function formatTimestamp(timestamp) {
   const date = new Date(timestamp);
   return date.toLocaleDateString('id-ID', {
@@ -15,7 +15,7 @@ function formatTimestamp(timestamp) {
   });
 }
 
-// --- Styled Components  ---
+// Komponen-komponen bergaya untuk struktur kartu postingan
 const Card = styled.div`
   background: ${({ theme }) => theme.colors.card};
   border: 1px solid #eee;
@@ -81,12 +81,12 @@ const FooterButton = styled.div`
   font-weight: ${props => props.liked ? '700' : '400'};
   &:hover { opacity: 0.7; }
 `;
-// --- Styled Components Selesai ---
 
 const PostCard = ({ post, onDeleteSuccess }) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth(); // Ambil data user yang sedang login
+  const navigate = useNavigate(); // Untuk navigasi antar halaman
 
+  // Destructuring data dari post
   const {
     id: postId,
     content,
@@ -96,43 +96,48 @@ const PostCard = ({ post, onDeleteSuccess }) => {
     comment_count,
   } = post;
 
+  // State untuk menyimpan status "like" dan jumlah like saat ini
   const [isLiked, setIsLiked] = useState(post.is_liked_by_me);
   const [currentLikes, setCurrentLikes] = useState(like_count);
 
+  // Fungsi saat tombol "like" diklik
   const handleLikeClick = async (e) => {
-    e.stopPropagation(); 
+    e.stopPropagation(); // Mencegah klik ikut membuka halaman post
     if (isLiked) {
-      await unlikePost(postId);
+      await unlikePost(postId); // Hapus like
       setCurrentLikes(prev => prev - 1);
       setIsLiked(false);
     } else {
-      await likePost(postId);
+      await likePost(postId); // Tambahkan like
       setCurrentLikes(prev => prev + 1);
       setIsLiked(true);
     }
   };
 
+  // Fungsi saat tombol komentar diklik → menuju halaman detail post dengan fokus komentar
   const handleCommentClick = (e) => {
     e.stopPropagation();
     navigate(`/post/${postId}?focus_comment=true`);
   };
 
+  // Klik di area kartu membuka halaman detail post
   const navigateToDetail = () => {
     navigate(`/post/${postId}`);
   };
   
-  // --- TAMBAHAN FUNGSI NAVIGASI ---
+  // Tambahan fungsi navigasi profil
   const navigateToProfile = (e) => {
-    e.stopPropagation(); // Mencegah klik agar tidak lari ke 'navigateToDetail'
-    navigate(`/profil/${author.handle}`);
+    e.stopPropagation(); // Supaya tidak ikut trigger buka post
+    navigate(`/profil/${author.handle}`); // Pindah ke halaman profil user
   };
 
+  // Fungsi hapus post jika user adalah pemiliknya
   const handleDeleteClick = async (e) => {
     e.stopPropagation();
     if (window.confirm('Yakin mau hapus post ini, G?')) {
       await deletePost(postId);
       if (onDeleteSuccess) {
-        onDeleteSuccess(postId);
+        onDeleteSuccess(postId); // Panggil callback untuk hapus dari list post
       }
     }
   };
@@ -140,42 +145,7 @@ const PostCard = ({ post, onDeleteSuccess }) => {
   return (
     <Card onClick={navigateToDetail}>
       <CardHeader>
+        {/* Klik avatar akan membuka profil penulis */}
         <Avatar 
           src={author?.avatar_url || 'default-avatar-url.png'} 
-          alt="avatar" 
-          onClick={navigateToProfile} 
-        />
-        <AuthorInfo>
-          <AuthorName onClick={navigateToProfile}>
-            {author?.name || 'User'}
-          </AuthorName>
-          <AuthorHandle>@{author?.handle || 'userhandle'}</AuthorHandle>
-        </AuthorInfo>
-        <Timestamp>{formatTimestamp(created_at)}</Timestamp>
-      </CardHeader>
-
-      <CardBody>{content}</CardBody>
-
-      <CardFooter>
-        <FooterButton onClick={handleCommentClick}>
-          <span>💬</span>
-          <span>{comment_count}</span>
-        </FooterButton>
-        <FooterButton liked={isLiked} onClick={handleLikeClick}>
-          <span>❤️</span>
-          <span>{currentLikes}</span>
-        </FooterButton>
-        
-        {author?.id === user?.id && (
-          <>
-            <FooterButton onClick={handleDeleteClick} style={{color: '#888', marginLeft: 'auto'}}>
-              <span>🗑️ Hapus</span>
-            </FooterButton>
-          </>
-        )}
-      </CardFooter>
-    </Card>
-  );
-};
-
-export default PostCard;
+          alt=
