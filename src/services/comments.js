@@ -1,28 +1,59 @@
 import { supabase } from "./supabase.js";
 
-export async function createComment(postId, content) {
+export async function createComment(postId, content, categoryNames = []) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     alert("Anda harus login untuk berkomentar.");
     return null;
   }
 
-  const { data, error } = await supabase
+  // --- Bagian 1: Upsert Kategori (Sama seperti createPost) ---
+  const categoryObjects = categoryNames.map(name => ({ name: name.trim() }));
+  
+  const { data: categories, error: categoryError } = await supabase
+    .from("categories")
+    .upsert(categoryObjects, { onConflict: 'name' })
+    .select("id, name");
+
+  if (categoryError) {
+    console.error("Gagal membuat/mencari kategori:", categoryError);
+  }
+
+  // --- Bagian 2: Buat Komentar ---
+  const { data: commentData, error: commentError } = await supabase
     .from("comments")
     .insert([{ 
       content: content, 
       post_id: postId,
       user_id: user.id
     }])
-    // Minta HANYA ID dan timestamp
     .select("id, created_at") 
-    .single(); // Kita hanya insert satu
+    .single();
 
-  if (error) {
-    console.error("Gagal membuat komentar (INSERT error):", error.message);
+  if (commentError) {
+    console.error("Gagal membuat komentar (INSERT error):", commentError.message);
     return null; 
   }
 
+  const newCommentId = commentData.id;
+
+  // --- Bagian 3: Tautkan Komentar dengan Kategori ---
+  if (categories && categories.length > 0) {
+    const links = categories.map(cat => ({
+      comment_id: newCommentId, 
+      category_id: cat.id
+    }));
+
+    const { error: linkError } = await supabase
+      .from("comment_categories") 
+      .insert(links);
+
+    if (linkError) {
+      console.error("Gagal menautkan kategori ke komentar:", linkError);
+    }
+  }
+
+  // --- Bagian 4: Notifikasi ---
   const { data: postData } = await supabase
     .from("posts")
     .select("user_id")
@@ -40,7 +71,7 @@ export async function createComment(postId, content) {
     ]);
   }
   
-  return data; 
+  return commentData;
 }
 
 
