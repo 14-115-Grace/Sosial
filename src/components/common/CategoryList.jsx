@@ -1,11 +1,11 @@
 // src/components/common/CategoryList.jsx
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getAllCategories } from '../../services/categories'; //
+import { getAllCategories } from '../../services/categories'; 
 import { Link } from 'react-router-dom';
 
 const KategoriWrapper = styled.div`
-  background-color: #FBF7E9; // Warna beige/kuning muda dari Figma
+  background-color: #FBF7E9; 
   border: 1px solid #EBE5D1;
   border-radius: ${({ theme }) => theme.borderRadius};
   padding: 1.5rem;
@@ -38,7 +38,7 @@ const CategoryList = () => {
   useEffect(() => {
     const fetchKategori = async () => {
       setLoading(true);
-      const data = await getAllCategories(); //
+      const data = await getAllCategories(); 
       setKategori(data);
       setLoading(false);
     };
