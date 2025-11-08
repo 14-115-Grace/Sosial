@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.jsx';
@@ -16,23 +17,25 @@ import NotFound from './pages/NotFound.jsx';
 import Pengaturan from './pages/Pengaturan.jsx';
 
 // --- Pelindung Rute Private ---
+// Komponen ini "jagain" halaman yang cuma boleh diliat kalo udah login
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth(); // Cek status login
   if (!user) {
     // Kalo belom login, tendang ke /login
     return <Navigate to="/login" replace />;
   }
-  return children; // Kalo udah, tampilin halamannya
+  return children; 
 };
 
 // --- Komponen Shortcut Buat /profil/me ---
 const MyProfileRedirect = () => {
+  //  BACA 'profile' DARI CONTEXT
   const { profile } = useAuth(); 
   
   if (!profile) return <Navigate to="/login" replace />;
   
   // Ambil 'handle' dari OBJEK PROFIL, bukan user_metadata
-  const userIdentifier = profile.handle; // <-- INI PERBAIKANNYA
+  const userIdentifier = profile.handle; 
   
   return <Navigate to={`/profil/${userIdentifier}`} replace />;
 };
@@ -40,7 +43,7 @@ const MyProfileRedirect = () => {
 // --- Konfigurasi Router ---
 const router = createBrowserRouter([
   {
-    // Rute yang pake MainLayout (Sidebar merah)
+    // Rute yang pake MainLayout 
     path: '/',
     element: <MainLayout />, // Layout utama jadi 'wrapper'
     children: [
@@ -66,7 +69,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'kategori', // Rute /kategori
-        element: <Kategori />, // Ini public, gak perlu <ProtectedRoute>
+        element: <Kategori />, // Ini public
       },
       {
         path: 'profil/me', // Rute 'shortcut' dari sidebar
@@ -85,7 +88,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'post/:postId',
+        path: 'post/:postId', 
         element: <ProtectedRoute><PostDetail /></ProtectedRoute>,
       },
       {
@@ -108,6 +111,7 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
+    // Rute 'Catch-all' (404)
     path: '*', // Kalo URL gak ketemu
     element: <NotFound />,
   },
