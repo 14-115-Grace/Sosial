@@ -1,9 +1,8 @@
-// src/components/comment/CommentCard.jsx
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom'; // <-- 1. IMPORT useNavigate
-import { useAuth } from '../../context/AuthContext.jsx'; 
-import { likeComment, unlikeComment } from '../../services/comments.js';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { likeComment, unlikeComment, deleteComment } from '../../services/comments.js';
 
 // --- Helper Functions ---
 function formatTimestamp(timestamp) {
@@ -15,7 +14,7 @@ function formatTimestamp(timestamp) {
   });
 }
 
-// --- Styled Components ---
+// --- (Styled Components) ---
 const Card = styled.div`
   background: ${({ theme }) => theme.colors.card};
   border: 1px solid #eee;
@@ -76,14 +75,14 @@ const FooterButton = styled.div`
   cursor: pointer;
   font-size: 0.9rem;
   color: ${props => props.liked ? props.theme.colors.primary : '#555'};
-  font-weight: ${props => props.liked ? '700': '400'};
+  font-weight: ${props => props.liked ? '700' : '400'};
   &:hover { opacity: 0.7; }
 `;
-// --- Styled Components Selesai ---
 
-const CommentCard = ({ comment }) => {
+// --- TERIMA PROP BARU: onDeleteSuccess ---
+const CommentCard = ({ comment, onDeleteSuccess }) => {
   const { user } = useAuth();
-  const navigate = useNavigate(); // <-- 2. INISIALISASI useNavigate
+  const navigate = useNavigate();
 
   const {
     id: commentId,
@@ -109,17 +108,29 @@ const CommentCard = ({ comment }) => {
     }
   };
 
-  // --- FUNGSI NAVIGASI  ---
   const navigateToProfile = (e) => {
-    e.stopPropagation(); // Mencegah event bubbling
+    e.stopPropagation();
     navigate(`/profil/${author.handle}`);
   };
-  // ---  SELESAI  ---
+  
+  // --- BUAT FUNGSI HANDLE DELETE ---
+  const handleDeleteClick = async (e) => {
+    e.stopPropagation(); 
+    if (window.confirm('Yakin mau hapus komentar ini?')) {
+      try {
+        await deleteComment(commentId); 
+        if (onDeleteSuccess) {
+          onDeleteSuccess(commentId); 
+        }
+      } catch (err) {
+        alert("Gagal menghapus komentar: " + err.message);
+      }
+    }
+  };
 
   return (
     <Card>
       <CardHeader>
-        {/* --- onClick  --- */}
         <Avatar 
           src={author?.avatar_url || 'default-avatar-url.png'} 
           alt="avatar" 
@@ -134,20 +145,20 @@ const CommentCard = ({ comment }) => {
         <Timestamp>{formatTimestamp(created_at)}</Timestamp>
       </CardHeader>
 
-      <CardBody>{content}</CardBody>
-
       <CardFooter>
         <FooterButton liked={isLiked} onClick={handleLikeClick}>
           <span>❤️</span>
           <span>{currentLikes}</span>
         </FooterButton>
         
+        {/* --- PASTIKAN TOMBOL INI AKTIF --- */}
         {author?.id === user?.id && (
-          <>
-            {/* <FooterButton style={{color: '#888', marginLeft: 'auto'}}>
-              <span>🗑️ Hapus</span>
-            </FooterButton> */}
-          </>
+          <FooterButton 
+            style={{color: '#888', marginLeft: 'auto'}}
+            onClick={handleDeleteClick}
+          >
+            <span>🗑️ Hapus</span>
+          </FooterButton>
         )}
       </CardFooter>
     </Card>
