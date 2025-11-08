@@ -1,100 +1,90 @@
-disku-share 🚀 | Tempat Ngobrol & Diskusi Santai
+# disku-share
 
-disku-share itu platform diskusi sosial yang dibikin buat kita-kita yang mau sharing ide, curhat, atau ngomongin topik seru tanpa toxic. Anggap aja ini tempat nongkrong virtual, tapi fokusnya ke konten yang oke dan bermanfaat. Di sini, kita bisa tukar pikiran (yang santai tapi ngena, ya!) dan nambah teman baru.
+[![Live Site](https://img.shields.io/badge/Live_Site-Vercel-black?style=for-the-badge&logo=vercel)](https://sosial-tau.vercel.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repo-blue?style=for-the-badge&logo=github)](https://github.com/14-115-Grace/Sosial)
 
-🌟 Fitur-Fitur Kerennya
+Sebuah platform forum diskusi modern untuk berbagi opini dan membahas isu terkini.
 
-Diskusi Real-time: Bikin postingan baru dan lihat balasan muncul langsung, beneran gak perlu refresh!
+## 🚀 Tentang Proyek
 
-Komentar & Balasan: Ngobrol langsung sama pengguna lain, bisa balas-balasan biar diskusinya makin asyik.
+`disku-share` adalah sebuah platform yang dirancang sebagai wadah bagi pengguna untuk berbagi opini, berdiskusi, dan mengikuti isu-isu terkini yang sedang ramai diperbincangkan.
 
-Profil Pengguna: Tunjukin siapa kamu ke komunitas.
+Aplikasi ini memungkinkan pengguna untuk membuat postingan, berinteraksi melalui komentar, memfilter topik berdasarkan kategori, dan melihat apa yang sedang populer.
 
-Filter Topik: Cari topik diskusi berdasarkan kategori, jadi gak perlu scroll jauh-jauh.
+## ✨ Fitur Utama
 
-Desain Simpel & Enak Dilihat: Tampilannya bersih, nyaman di mata, mau buka di HP atau laptop tetep oke.
+* **Autentikasi Pengguna**: Sistem Login dan Register untuk pengguna.
+* **CRUD Postingan**: Pengguna dapat membuat, membaca, dan delete postingan.
+* **Sistem Komentar**: Kemampuan untuk berdiskusi di setiap postingan.
+* **Filter Kategori**: Melihat postingan berdasarkan kategori topik tertentu.
+* **Postingan Populer**: Menampilkan isu atau diskusi yang sedang ramai.
+* **Halaman Profil**: Halaman khusus untuk setiap pengguna.
+* **Halaman 'Tentang Kami'**: Informasi mengenai aplikasi `disku-share`.
 
-🛠️ Teknologi yang Dipakai
+## 💻 Teknologi yang Digunakan
 
-Proyek ini dibuat pakai teknologi-teknologi keren ini:
+* **Frontend**:
+    * React.js
+    * Vite
+* **Backend**:
+    * Supabase (Database & Autentikasi)
+* **Deployment**:
+    * Vercel
 
-Frontend Framework: Next.js (React)
+## 🛠️ Instalasi & Menjalankan Lokal
 
-Styling: Tailwind CSS (Untuk desain yang cepat dan mulus)
+Kalau kamu mau coba jalanin proyek ini di komputermu, ikuti langkah-langkah ini:
 
-State Management: (Asumsi) React Hooks (useState, useReducer, Context API)
+1.  **Clone repository**
+    ```bash
+    git clone [https://github.com/14-115-Grace/Sosial.git](https://github.com/14-115-Grace/Sosial.git)
+    ```
 
-Database & Auth: Firebase / Firestore (Buat simpan data real-time dan otentikasi pengguna)
+2.  **Masuk ke direktori proyek**
+    ```bash
+    cd Sosial
+    ```
 
-🚀 Cara Pasang di Komputer Sendiri
+3.  **Install dependencies**
+    ```bash
+    npm install
+    # atau
+    yarn install
+    ```
 
-Kalau kamu mau coba jalankan proyek ini di komputermu, gampang kok! Ikuti aja langkah-langkah ini:
+4.  **Siapkan Environment Variables**
+    Buat file baru bernama `.env.local` di root proyek dan isi dengan kredensial Supabase kamu.
+    ```env
+    VITE_SUPABASE_URL=[URL_PROJECT_SUPABASE_KAMU]
+    VITE_SUPABASE_ANON_KEY=[ANON_KEY_SUPABASE_KAMU]
+    ```
 
-Yang Dibutuhkan
+5.  **Jalankan aplikasi**
+    ```bash
+    npm run dev
+    # atau
+    yarn dev
+    ```
 
-Pastikan kamu sudah pasang Node.js dan npm/yarn/pnpm ya.
+6.  Buka [http://localhost:5173](http://localhost:5173) (atau port lain jika diinfokan di terminal) di browsermu.
 
-1. Kloning Repository
+## 👤 Author
 
-git clone [https://github.com/14-115-Grace/Sosial.git](https://github.com/14-115-Grace/Sosial.git)
-cd Sosial
-
-
-2. Instalasi Dependensi
-
-Pakai package manager favoritmu:
-
-# Dengan npm
-npm install
-
-# Atau dengan yarn
-yarn
-
-
-3. Konfigurasi Environment
-
-Bikin file .env.local di folder root, terus isi pakai config Firebase atau backend kamu (contohnya):
-
-# Contoh Config Firebase
-NEXT_PUBLIC_API_KEY=YOUR_API_KEY
-NEXT_PUBLIC_AUTH_DOMAIN=YOUR_AUTH_DOMAIN
-NEXT_PUBLIC_PROJECT_ID=YOUR_PROJECT_ID
-# ... dan seterusnya
-
-
-4. Jalankan Aplikasinya
-
-Jalankan server development-nya:
-
-# Dengan npm
-npm run dev
-
-# Atau dengan yarn
-yarn dev
-
-
-Aplikasinya bakal jalan di http://localhost:3000. Langsung coba aja!
-
-🤝 Mau Bantu Kontribusi?
-
-Kami senang banget lho kalau kamu mau bantu! Kalau kamu nemu bug, punya ide fitur baru yang keren, atau mau bantu-bantu rapiin kode, jangan ragu-ragu ya:
-
-Fork repository ini.
-
-Bikin branch baru: git checkout -b feature/nama-fitur-baru.
-
-Commit perubahanmu: git commit -m 'feat: nambahin fitur keren X'.
-
-Push ke branch: git push origin feature/nama-fitur-baru.
-
-Bikin Pull Request baru!
-
-📜 Lisensi
-
-Proyek ini pakai lisensi MIT. Silakan dipakai dan dikembangkan!
-
-🧑‍💻 Kontak
-
-Grace Exauditha Nababan - email : grace.123140115@student.itera.ac.id
-
-Link Proyek: https://sosial-tau.vercel.app/
+* **Grace**
+  * Email : grace.123140115@student.itera.ac.id
+* **Marvin**
+  * Email : marvin.123140185@student.itera.ac.id
+* **Memory**
+  * Email : memory.123140095@student.itera.ac.id
+* **Aditya**
+  * Email : aditya.123140093@student.itera.ac.id
+* **Arkan**
+  * Email : muhammad.123140166@student.itera.ac.id
+* **Widia**
+  * Email : widia.123140038@student.itera.ac.id
+* **Leony**
+  * Email : juliani.123140029@student.itera.ac.id
+* **Gohan**
+  * Email : gohan.123140160@student.itera.ac.id
+* **Nikson**
+  * Email : nikson.123140051@student.itera.ac.id
